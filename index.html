@@ -12,7 +12,6 @@
 </head>
 <body class="bg-[#0b0f19] text-gray-200 min-h-screen antialiased">
 
-    <!-- Top Navigation Bar -->
     <header class="border-b border-gray-800 bg-[#111827]/80 backdrop-blur-md sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -34,9 +33,7 @@
     <main class="max-w-6xl mx-auto px-6 py-10">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <!-- ฝั่งซ้าย: จัดการหมวดหมู่ทั้งหมด -->
             <div class="space-y-6 lg:col-span-1">
-                <!-- ฟอร์มสร้างหมวดหมู่ -->
                 <div class="bg-[#111827] border border-gray-800 p-6 rounded-2xl shadow-xl">
                     <div class="flex items-center gap-2 mb-4">
                         <span class="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg">
@@ -45,7 +42,7 @@
                         <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400">สร้างหมวดหมู่ใหม่</h2>
                     </div>
                     <form action="/add_category" method="POST" class="space-y-3">
-                        <input type="text" name="category_name" placeholder="เช่น เครื่องดื่ม, โมเดล, เสื้อผ้า" required
+                        <input type="text" name="category_name" placeholder="ชื่อหมวดหมู่" required
                             class="w-full px-4 py-2.5 bg-[#1f2937] border border-gray-700/60 rounded-xl focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none text-sm text-white placeholder-gray-500 transition">
                         <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 active:scale-[0.98] text-white text-sm font-semibold py-2.5 rounded-xl transition">
                             สร้างหมวดหมู่
@@ -53,29 +50,25 @@
                     </form>
                 </div>
 
-                <!-- รายชื่อหมวดหมู่ที่มีอยู่ (สามารถกดลบได้จริง) -->
                 <div class="bg-[#111827] border border-gray-800 p-6 rounded-2xl shadow-xl">
                     <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">หมวดหมู่ปัจจุบัน</h3>
                     <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
                         {% for cat in categories %}
-                        <div class="flex items-center justify-between bg-gray-900/60 border border-gray-800 px-3 py-2 rounded-xl group">
+                        <div class="flex items-center justify-between bg-gray-900/60 border border-gray-800 px-3 py-2 rounded-xl">
                             <span class="text-sm font-medium text-gray-300">{{ cat[1] }}</span>
-                            <a href="/delete_category/{{ cat[0] }}" onclick="return confirm('ลบหมวดหมู่นี้? สินค้าที่อยู่ในหมวดหมู่นี้จะถูกย้ายไปอยู่กลุ่มทั่วไป')"
+                            <a href="/delete_category/{{ cat[0] }}" onclick="return confirm('ต้องการลบหมวดหมู่นี้ใช่ไหม?')"
                                class="text-gray-500 hover:text-rose-400 transition p-1">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </a>
                         </div>
                         {% endfor %}
                         {% if not categories %}
-                        <p class="text-xs text-gray-500 text-center py-4">ยังไม่มีหมวดหมู่สินค้า</p>
                         {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- ฝั่งขวา: เพิ่มสินค้าและตารางแสดงสต็อก -->
             <div class="space-y-6 lg:col-span-2">
-                <!-- ฟอร์มสร้างสินค้า -->
                 <div class="bg-[#111827] border border-gray-800 p-6 rounded-2xl shadow-xl">
                     <div class="flex items-center gap-2 mb-4">
                         <span class="p-1.5 bg-indigo-500/10 text-indigo-400 rounded-lg">
@@ -84,10 +77,10 @@
                         <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400">เพิ่มสินค้าเข้าคลัง</h2>
                     </div>
                     <form action="/add_item" method="POST" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <input type="text" name="name" placeholder="ชื่อสินค้า เช่น Coca Cola กระป๋อง" required
+                        <input type="text" name="name" placeholder="ชื่อสินค้า" required
                             class="w-full px-4 py-2.5 bg-[#1f2937] border border-gray-700/60 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none text-sm text-white placeholder-gray-500 transition">
                         
-                        <input type="number" name="price" step="0.01" placeholder="ราคา เช่น 15" required
+                        <input type="number" name="price" step="0.01" placeholder="ราคา (บาท)" required
                             class="w-full px-4 py-2.5 bg-[#1f2937] border border-gray-700/60 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none text-sm text-white placeholder-gray-500 transition">
                         
                         <select name="category_id" required class="w-full px-4 py-2.5 bg-[#1f2937] border border-gray-700/60 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none text-sm text-white transition cursor-pointer">
@@ -103,7 +96,6 @@
                     </form>
                 </div>
 
-                <!-- ตารางรายการสต็อกสินค้า -->
                 <div class="bg-[#111827] border border-gray-800 rounded-2xl shadow-xl overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between bg-gray-900/50">
                         <h3 class="font-bold text-gray-300 text-sm tracking-wide uppercase">คลังสินค้าปัจจุบัน</h3>
@@ -158,17 +150,6 @@
                                 </tr>
                                 {% endfor %}
                                 {% if not items %}
-                                <tr>
-                                    <td colspan="4" class="py-12 text-center text-gray-500">
-                                        <div class="flex flex-col items-center justify-center gap-3">
-                                            <div class="p-3 bg-gray-900 border border-gray-800 text-gray-400 rounded-2xl">
-                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                                            </div>
-                                            <div class="text-sm font-medium">คลังสินค้าว่างเปล่า</div>
-                                            <p class="text-xs text-gray-600 max-w-xs leading-relaxed">กรุณาสร้างหมวดหมู่สินค้าทางด้านซ้ายก่อน จากนั้นจึงจะสามารถเพิ่มสินค้าและกดคีย์ปุ่มบวก (+) เพื่อเริ่มสะสมสต็อกได้ครับ</p>
-                                        </div>
-                                    </td>
-                                </tr>
                                 {% endif %}
                             </tbody>
                         </table>
