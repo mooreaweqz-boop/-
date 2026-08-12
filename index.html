@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการสต็อกและหมวดหมู่</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen text-gray-800">
+
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-900">📦 ระบบหลังบ้านสต็อกสินค้า</h1>
+
+        <!-- ส่วนฟอร์มสร้างข้อมูล -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            
+            <!-- 📁 ฟอร์มกรอกชื่อหมวดหมู่และกดสร้างได้เลย -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-lg font-bold mb-3 text-purple-700">📁 สร้างหมวดหมู่ใหม่</h2>
+                <form action="/add_category" method="POST" class="space-y-3">
+                    <input type="text" name="category_name" placeholder="ชื่อหมวดหมู่ เช่น ขนม, เครื่องดื่ม" required
+                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none text-sm">
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-lg text-sm transition">
+                        สร้างหมวดหมู่
+                    </button>
+                </form>
+            </div>
+
+            <!-- 🛒 ฟอร์มเพิ่มสินค้า (ชื่อ + ราคา + เลือกหมวดหมู่ -> กดสร้าง) -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 md:col-span-2">
+                <h2 class="text-lg font-bold mb-3 text-blue-700">🛒 เพิ่มสินค้าใหม่</h2>
+                <form action="/add_item" method="POST" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input type="text" name="name" placeholder="ชื่อสินค้า" required
+                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                    
+                    <input type="number" name="price" step="0.01" placeholder="ราคา (บาท)" required
+                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                    
+                    <select name="category_id" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white">
+                        <option value="" disabled selected>-- เลือกหมวดหมู่ --</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat[0] }}">{{ cat[1] }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-sm transition sm:col-span-3">
+                        สร้างสินค้า
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 📊 ตารางแสดงรายการสินค้า -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-100 border-b border-gray-200 text-gray-700 text-sm font-semibold">
+                        <th class="py-3 px-4">สินค้า & ราคา</th>
+                        <th class="py-3 px-4">หมวดหมู่</th>
+                        <th class="py-3 px-4 text-center">จำนวนสต็อก</th>
+                        <th class="py-3 px-4 text-center">จัดการสต็อก & ลบสินค้า</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-sm">
+                    {% for item in items %}
+                    <tr class="hover:bg-gray-50/70">
+                        <!-- แสดงชื่อสินค้าและราคาข้างกัน -->
+                        <td class="py-4 px-4">
+                            <div class="font-semibold text-gray-900">{{ item[1] }}</div>
+                            <div class="text-xs text-gray-500">ราคา: <span class="text-blue-600 font-medium">{{ "{:,.2f}".format(item[2]) }}</span> บาท</div>
+                        </td>
+                        <!-- แสดงหมวดหมู่ -->
+                        <td class="py-4 px-4">
+                            <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-medium">
+                                {{ item[4] if item[4] else 'ไม่มีหมวดหมู่' }}
+                            </span>
+                        </td>
+                        <!-- แสดงจำนวน -->
+                        <td class="py-4 px-4 text-center">
+                            <span class="font-bold {% if item[3] > 0 %}text-green-600{% else %}text-red-500{% endif %}">
+                                {{ item[3] }} ชิ้น
+                            </span>
+                        </td>
+                        <!-- ปุ่มคีย์สต็อกและปุ่มลบอยู่ข้าง ๆ กัน -->
+                        <td class="py-4 px-4 text-center">
+                            <div class="flex items-center justify-center gap-4">
+                                <!-- ปุ่มคีย์สต็อก (+ / -) -->
+                                <div class="inline-flex rounded-md shadow-sm" role="group">
+                                    <a href="/update_stock/{{ item[0] }}/decrease" 
+                                       class="px-2.5 py-1 bg-gray-100 hover:bg-red-500 hover:text-white border border-gray-200 rounded-l-md transition font-bold text-xs">-</a>
+                                    <a href="/update_stock/{{ item[0] }}/increase" 
+                                       class="px-2.5 py-1 bg-gray-100 hover:bg-green-500 hover:text-white border-t border-b border-r border-gray-200 rounded-r-md transition font-bold text-xs">+</a>
+                                </div>
+                                <!-- ปุ่มลบสินค้า -->
+                                <a href="/delete_item/{{ item[0] }}" onclick="return confirm('ต้องการลบสินค้านี้ใช่ไหม?')"
+                                   class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-2.5 py-1 rounded border border-red-200 font-medium transition">
+                                    ลบ
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not items %}
+                    <tr>
+                        <td colspan="4" class="py-8 text-center text-gray-400">ยังไม่มีสินค้าในคลังขณะนี้</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>
